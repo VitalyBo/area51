@@ -1,31 +1,25 @@
-/* app/globals.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* src/app/globals.css */
+/* Tailwind v4 syntax — use @import instead of @tailwind directives */
+@import "tailwindcss";
 
 @layer base {
-  :root {
-    --font-sans: 'Space Grotesk', sans-serif;
-    --font-mono: 'Geist Mono', monospace;
-  }
-
   * {
-    border-color: theme('colors.zinc.800');
+    border-color: #27272a; /* zinc-800 */
   }
 
   body {
-    background-color: theme('colors.zinc.950');
-    color: theme('colors.zinc.100');
+    background-color: #09090b; /* zinc-950 */
+    color: #f4f4f5;            /* zinc-100 */
   }
 
   /* Custom scrollbar */
   ::-webkit-scrollbar        { width: 6px; }
-  ::-webkit-scrollbar-track  { background: theme('colors.zinc.900'); }
-  ::-webkit-scrollbar-thumb  { background: theme('colors.zinc.700'); border-radius: 3px; }
+  ::-webkit-scrollbar-track  { background: #18181b; } /* zinc-900 */
+  ::-webkit-scrollbar-thumb  { background: #3f3f46; border-radius: 3px; } /* zinc-700 */
 }
 
 @layer utilities {
-  /* Subtle scanline overlay for the sci-fi feel */
+  /* Subtle scanline overlay for sci-fi feel */
   .scanlines {
     background-image: repeating-linear-gradient(
       0deg,
@@ -37,9 +31,8 @@
     pointer-events: none;
   }
 
-  /* Glow effect for danger badges */
-  .glow-red    { box-shadow: 0 0 12px rgba(239, 68, 68, 0.4); }
-  .glow-orange { box-shadow: 0 0 12px rgba(249, 115, 22, 0.4); }
-  .glow-yellow { box-shadow: 0 0 12px rgba(234, 179, 8, 0.4); }
-  .glow-green  { box-shadow: 0 0 12px rgba(34, 197, 94, 0.4); }
+  .glow-red    { box-shadow: 0 0 12px rgba(239, 68,  68,  0.4); }
+  .glow-orange { box-shadow: 0 0 12px rgba(249, 115, 22,  0.4); }
+  .glow-yellow { box-shadow: 0 0 12px rgba(234, 179, 8,   0.4); }
+  .glow-green  { box-shadow: 0 0 12px rgba(34,  197, 94,  0.4); }
 }
