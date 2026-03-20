@@ -1,6 +1,4 @@
 // app/dashboard/page.tsx
-// Main dashboard — lists anomalies and artifacts with search, filter, pagination
-
 import Link from 'next/link'
 import { getAnomaliesCollection, getArtifactsCollection } from '@/lib/mongodb'
 import AnomalyCard from '@/components/AnomalyCard'
@@ -12,17 +10,21 @@ import { Anomaly, Artifact } from '@/types'
 
 const PAGE_SIZE = 9
 
+// 1. Оновлюємо типи для Next.js 15
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
     tab?: string
     q?: string
     danger?: string
     status?: string
     page?: string
-  }
+  }>
 }
 
-export default async function DashboardPage({ searchParams }: PageProps) {
+export default async function DashboardPage(props: PageProps) {
+  // 2. Обов'язково розпаковуємо searchParams за допомогою await
+  const searchParams = await props.searchParams;
+
   const tab    = searchParams.tab    || 'anomalies'
   const query  = searchParams.q      || ''
   const danger = searchParams.danger || ''
@@ -35,8 +37,6 @@ export default async function DashboardPage({ searchParams }: PageProps) {
 
   if (tab === 'anomalies') {
     const col   = await getAnomaliesCollection()
-
-    // Build filter query
     const filter: Record<string, unknown> = {}
     if (query)  filter.codename    = { $regex: query, $options: 'i' }
     if (danger) filter.dangerLevel = danger
@@ -54,7 +54,6 @@ export default async function DashboardPage({ searchParams }: PageProps) {
 
   } else {
     const col   = await getArtifactsCollection()
-
     const filter: Record<string, unknown> = {}
     if (query) filter.name   = { $regex: query, $options: 'i' }
 
@@ -73,7 +72,6 @@ export default async function DashboardPage({ searchParams }: PageProps) {
 
   return (
     <div className="space-y-6">
-
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
