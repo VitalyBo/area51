@@ -1,3 +1,6 @@
+// app/api/anomalies/[id]/route.ts
+// Next.js 16: params is now a Promise — must use await
+
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -5,19 +8,15 @@ import { getAnomaliesCollection } from "@/lib/mongodb";
 import { anomalySchema } from "@/lib/validations";
 import { ObjectId } from "mongodb";
 
-// Тип для контексту запиту в Next.js 15/16
-type RouteContext = {
-  params: Promise<{ id: string }>;
-};
+type Params = { params: Promise<{ id: string }> };
 
-// GET /api/anomalies/:id
-export async function GET(request: NextRequest, context: RouteContext) {
+export async function GET(request: NextRequest, { params }: Params) {
   try {
-    const { id } = await context.params; // Отримуємо ID через await
-
     const session = await getServerSession(authOptions);
     if (!session)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const { id } = await params;
 
     const col = await getAnomaliesCollection();
     const doc = await col.findOne({ _id: new ObjectId(id) });
@@ -34,15 +33,13 @@ export async function GET(request: NextRequest, context: RouteContext) {
   }
 }
 
-// PUT /api/anomalies/:id
-export async function PUT(request: NextRequest, context: RouteContext) {
+export async function PUT(request: NextRequest, { params }: Params) {
   try {
-    const { id } = await context.params; // Отримуємо ID через await
-
     const session = await getServerSession(authOptions);
     if (!session)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+    const { id } = await params;
     const body = await request.json();
     const parsed = anomalySchema.safeParse(body);
 
@@ -75,14 +72,13 @@ export async function PUT(request: NextRequest, context: RouteContext) {
   }
 }
 
-// DELETE /api/anomalies/:id
-export async function DELETE(request: NextRequest, context: RouteContext) {
+export async function DELETE(request: NextRequest, { params }: Params) {
   try {
-    const { id } = await context.params; // Отримуємо ID через await
-
     const session = await getServerSession(authOptions);
     if (!session)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const { id } = await params;
 
     const col = await getAnomaliesCollection();
     const result = await col.deleteOne({ _id: new ObjectId(id) });

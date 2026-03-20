@@ -1,47 +1,50 @@
 // app/anomalies/[id]/page.tsx
-// Detail page for a single anomaly — Read + Delete
+// Next.js 16: params is now a Promise
 
-import { notFound } from 'next/navigation'
-import Link from 'next/link'
-import { getAnomaliesCollection } from '@/lib/mongodb'
-import { ObjectId } from 'mongodb'
-import { Anomaly } from '@/types'
-import DangerBadge from '@/components/DangerBadge'
-import StatusBadge from '@/components/StatusBadge'
-import DeleteButton from '@/components/DeleteButton'
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { getAnomaliesCollection } from "@/lib/mongodb";
+import { ObjectId } from "mongodb";
+import { Anomaly } from "@/types";
+import DangerBadge from "@/components/DangerBadge";
+import StatusBadge from "@/components/StatusBadge";
+import DeleteButton from "@/components/DeleteButton";
 
-interface Props { params: { id: string } }
+type Props = { params: Promise<{ id: string }> };
 
 export default async function AnomalyDetailPage({ params }: Props) {
-  let anomaly: Anomaly
+  const { id } = await params;
+
+  let anomaly: Anomaly;
 
   try {
-    const col = await getAnomaliesCollection()
-    const doc = await col.findOne({ _id: new ObjectId(params.id) })
-    if (!doc) notFound()
-    anomaly = { ...doc, _id: doc._id.toString() } as Anomaly
+    const col = await getAnomaliesCollection();
+    const doc = await col.findOne({ _id: new ObjectId(id) });
+    if (!doc) notFound();
+    anomaly = { ...doc, _id: doc._id.toString() } as Anomaly;
   } catch {
-    notFound()
+    notFound();
   }
 
   const row = (label: string, value: React.ReactNode) => (
     <div className="flex flex-col gap-1 border-b border-zinc-800 py-4 sm:flex-row sm:items-center sm:justify-between">
-      <span className="font-mono text-xs text-zinc-500 uppercase tracking-wider">{label}</span>
+      <span className="font-mono text-xs text-zinc-500 uppercase tracking-wider">
+        {label}
+      </span>
       <span className="font-mono text-sm text-zinc-200">{value}</span>
     </div>
-  )
+  );
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8">
-
-      {/* Breadcrumb */}
       <div className="mb-6 flex items-center gap-2 font-mono text-xs text-zinc-600">
-        <Link href="/anomalies" className="hover:text-zinc-400">Anomalies</Link>
+        <Link href="/anomalies" className="hover:text-zinc-400">
+          Anomalies
+        </Link>
         <span>/</span>
         <span className="text-zinc-400">{anomaly.codename}</span>
       </div>
 
-      {/* Header */}
       <div className="mb-8 flex items-start justify-between gap-4">
         <div>
           <p className="font-mono text-xs tracking-widest text-red-500 uppercase mb-1">
@@ -58,24 +61,35 @@ export default async function AnomalyDetailPage({ params }: Props) {
           >
             Edit
           </Link>
-          <DeleteButton id={anomaly._id} type="anomalies" redirectTo="/anomalies" />
+          <DeleteButton
+            id={anomaly._id}
+            type="anomalies"
+            redirectTo="/anomalies"
+          />
         </div>
       </div>
 
-      {/* Description */}
       <p className="mb-6 text-sm text-zinc-400 leading-relaxed border-l-2 border-red-800 pl-4">
         {anomaly.description}
       </p>
 
-      {/* Details */}
       <div className="rounded-sm border border-zinc-800 bg-zinc-900 px-5">
-        {row('Danger Level',       <DangerBadge level={anomaly.dangerLevel} />)}
-        {row('Containment Status', <StatusBadge status={anomaly.containmentStatus} />)}
-        {row('Sector',             anomaly.containmentSector || '—')}
-        {row('Discovery Date',     new Date(anomaly.discoveryDate).toLocaleDateString())}
-        {row('Last Reviewed',      new Date(anomaly.lastReviewed).toLocaleDateString())}
-        {row('Logged By',          anomaly.createdBy)}
+        {row("Danger Level", <DangerBadge level={anomaly.dangerLevel} />)}
+        {row(
+          "Containment Status",
+          <StatusBadge status={anomaly.containmentStatus} />,
+        )}
+        {row("Sector", anomaly.containmentSector || "—")}
+        {row(
+          "Discovery Date",
+          new Date(anomaly.discoveryDate).toLocaleDateString(),
+        )}
+        {row(
+          "Last Reviewed",
+          new Date(anomaly.lastReviewed).toLocaleDateString(),
+        )}
+        {row("Logged By", anomaly.createdBy)}
       </div>
     </div>
-  )
+  );
 }
