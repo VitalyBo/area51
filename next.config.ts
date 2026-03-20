@@ -1,8 +1,10 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  reactCompiler: true,
-};
+  // Allow images from Google (for user avatars in session)
+  images: {
+    domains: ['lh3.googleusercontent.com'],
+  },
+}
 
-export default nextConfig;
+export default nextConfig
