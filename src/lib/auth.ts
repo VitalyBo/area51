@@ -6,6 +6,15 @@
 import { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string
+    } & import("next-auth").DefaultSession["user"]
+  }
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
